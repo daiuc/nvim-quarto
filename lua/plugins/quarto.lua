@@ -222,7 +222,15 @@ return {
 
         pyright = {},
 
-        r_language_server = {},
+        r_language_server = {
+          settings = {
+            r = {
+              lsp = {
+                rich_documentation = false,
+              },
+            },
+          },
+        },
 
         bashls = {},
       }
