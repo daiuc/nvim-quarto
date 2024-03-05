@@ -354,8 +354,8 @@ wk.register({
 -- insert mode
 wk.register({
   -- ['<c-e>'] = { "<esc>:FeMaco<cr>i", "edit code" },
-  ['<m-->'] = { ' <- ', 'assign' },
-  ['<m-m>'] = { ' |> ', 'pipe' },
+  ['<m-m>'] = { ' <- ', 'assign' },
+  ['<m-m>'] = { ' %>% ', 'pipe' },
   ['<m-i>'] = { insert_r_chunk, 'r code chunk' },
   ['<cm-i>'] = { insert_py_chunk, 'python code chunk' },
   ['<m-I>'] = { insert_py_chunk, 'python code chunk' },

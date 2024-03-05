@@ -57,37 +57,6 @@ return {
     end,
   },
 
-  --{
-  --  'jpalardy/vim-slime',
-  --  init = function()
-  --    vim.g.slime_target = 'neovim'
-  --    vim.g.slime_python_ipython = 1
-  --    vim.g.slime_dispatch_ipython_pause = 100
-  --    vim.g.slime_cell_delimiter = '#\\s\\=%%'
-
-  --    vim.cmd [[
-  --    function! _EscapeText_quarto(text)
-  --    if slime#config#resolve("python_ipython") && len(split(a:text,"\n")) > 1
-  --    return ["%cpaste -q\n", slime#config#resolve("dispatch_ipython_pause"), a:text, "--\n"]
-  --    else
-  --    let empty_lines_pat = '\(^\|\n\)\zs\(\s*\n\+\)\+'
-  --    let no_empty_lines = substitute(a:text, empty_lines_pat, "", "g")
-  --    let dedent_pat = '\(^\|\n\)\zs'.matchstr(no_empty_lines, '^\s*')
-  --    let dedented_lines = substitute(no_empty_lines, dedent_pat, "", "g")
-  --    let except_pat = '\(elif\|else\|except\|finally\)\@!'
-  --    let add_eol_pat = '\n\s[^\n]\+\n\zs\ze\('.except_pat.'\S\|$\)'
-  --    return substitute(dedented_lines, add_eol_pat, "\n", "g")
-  --    end
-  --    endfunction
-  --    ]]
-  --  end,
-  --  config = function()
-  --    vim.keymap.set({ 'n', 'i' }, '<m-cr>', function()
-  --      vim.cmd [[ call slime#send_cell() ]]
-  --    end, { desc = 'send code cell to terminal' })
-  --  end,
-  --},
-
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -97,7 +66,7 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+      -- note: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
@@ -133,7 +102,7 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          -- NOTE: Remember that lua is a real programming language, and as such it is possible
+          -- note: Remember that lua is a real programming language, and as such it is possible
           -- to define small helper and utility functions so you don't have to repeat yourself
           -- many times.
           --
@@ -223,20 +192,6 @@ return {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        pyright = {},
-        r_language_server = {},
-        bashls = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
-        --
 
         lua_ls = {
           -- cmd = {...},
@@ -264,6 +219,12 @@ return {
             },
           },
         },
+
+        pyright = {},
+
+        r_language_server = {},
+
+        bashls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -272,13 +233,15 @@ return {
       --    :Mason
       --
       --  You can press `g?` for help in this menu
-      require('mason').setup()
+      require('mason').setup {}
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = vim.tbl_keys(servers or { 'lua_ls' })
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
+        'black',
+        'isort',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -307,9 +270,8 @@ return {
       },
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = { 'isort', 'black' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         -- javascript = { { "prettierd", "prettier" } },
@@ -341,7 +303,6 @@ return {
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
-
       -- If you want to add a bunch of pre-configured snippets,
       --    you can use this plugin to help you. It even has snippets
       --    for various frameworks/libraries/etc. but you will have to
@@ -409,12 +370,13 @@ return {
           end, { 'i', 's' }),
         },
         sources = {
-          { name = 'otter' },
+          { name = 'lua_ls' },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'pyright' },
           { name = 'r_language_server' },
           { name = 'bashls' },
+          { name = 'otter' },
           { name = 'path' },
           { name = 'calc' },
           { name = 'latex_symbols' },
@@ -434,7 +396,7 @@ return {
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc', 'r', 'python', 'markdown_inline' },
+        ensure_installed = { 'bash', 'c', 'html', 'markdown', 'vim', 'vimdoc', 'r', 'python', 'markdown_inline' },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = { enable = true },
@@ -488,5 +450,9 @@ return {
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
+  },
+
+  { --github copilot
+    'github/copilot.vim',
   },
 }
