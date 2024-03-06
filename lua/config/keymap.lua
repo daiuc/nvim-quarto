@@ -250,7 +250,7 @@ wk.register({
     },
   },
   s = {
-    name = 'spellcheck',
+    name = 'spellcheck/session',
     s = { '<cmd>Telescope spell_suggest<cr>', 'spelling' },
     ['/'] = { '<cmd>setlocal spell!<cr>', 'spellcheck' },
     n = { ']s', 'next' },
@@ -259,6 +259,7 @@ wk.register({
     r = { 'zg', 'rigth' },
     w = { 'zw', 'wrong' },
     b = { 'zw', 'bad' },
+    l = { 'list session' },
     ['?'] = { '<cmd>Telescope spell_suggest<cr>', 'suggest' },
   },
   g = {
