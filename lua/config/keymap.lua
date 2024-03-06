@@ -358,13 +358,14 @@ wk.register({
 
   -- NOTE: requires macos_option_as_alt left (or both) to be set <m--> is then option+- on macOS
   ['<m-->'] = { ' <- ', 'assign' },
-  --Shift+Command+m is pipe (for macOS)
-  --['<S-D-m>'] = { ' %>% ', 'pipe' }, -- works for kitty only
-  --Shift+Option+m is pipe for macOS
-  --NOTE: for iterm, need to map Shift+Option+m to Send Escape M
-  -- from copilot: send_text all \x1b[13;3u? (not verified)
-  -- for kitty, no need to map any keys, except the macos_option_as_alt
-  ['<Sm-m>'] = { ' %>% ', 'pipe' }, -- works for iterm (after keymap setting in iterm) and kitty
+
+  --NOTE:Shift+Command+m binding below works for kitty only
+  --For iTerm2, just map Shift+Option+m to Send text " %>% ".
+  --Alternatively, use <Sm-m> to beind Shift+Option+m,
+  --then in iTem2, map Shift+Option+m to Send Escape M (capital M)
+  --and in kitty, no need to map any keys, except setting macos_option_as_alt.
+  ['<S-D-m>'] = { ' %>% ', 'pipe' },
+
   ['<m-i>'] = { insert_r_chunk, 'r code chunk' },
   ['<cm-i>'] = { insert_py_chunk, 'python code chunk' },
   ['<m-I>'] = { insert_py_chunk, 'python code chunk' },
