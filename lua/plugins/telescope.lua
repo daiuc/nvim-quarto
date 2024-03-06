@@ -16,7 +16,7 @@ return {
           file_ignore_patterns = {
             'node_modules',
             '%_files/*.html',
-            '%_cache',
+            '%_cache*/',
             'docs/',
             '.git/',
             'site_libs',
