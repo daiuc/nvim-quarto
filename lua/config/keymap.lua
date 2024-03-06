@@ -355,8 +355,11 @@ wk.register({
 -- insert mode
 wk.register({
   -- ['<c-e>'] = { "<esc>:FeMaco<cr>i", "edit code" },
-  ['<m-m>'] = { ' <- ', 'assign' },
-  ['<m-m>'] = { ' %>% ', 'pipe' },
+
+  -- NOTE: requires macos_option_as_alt left (or both) to be set <m--> is then option+- on macOS
+  ['<m-->'] = { ' <- ', 'assign' },
+  --Shift+Command+m is pipe (for macOS)
+  ['<S-D-m>'] = { ' %>% ', 'pipe' },
   ['<m-i>'] = { insert_r_chunk, 'r code chunk' },
   ['<cm-i>'] = { insert_py_chunk, 'python code chunk' },
   ['<m-I>'] = { insert_py_chunk, 'python code chunk' },
