@@ -140,29 +140,40 @@ end
 --show kepbindings with whichkey
 --add your own here if you want them to
 --show up in the popup as well
+
+-- NOTE: normal mode with <leader>
 wk.register({
   r = { name = 'R' },
   c = {
-    name = 'code',
+    name = '[c]ode / [c]ell / [c]hunk',
     c = { ':SlimeConfig<cr>', 'slime config' },
-    n = { ':vsplit term://$SHELL<cr>', 'new terminal' },
+    n = { ':split term://$SHELL<cr>', 'new sh terminal' },
+    v = { ':vsplit term://$SHELL<cr>', 'new sh terminal - [v]split' },
     r = {
       function()
         vim.b['quarto_is_r_mode'] = true
-        vim.cmd 'vsplit term://R'
+        vim.cmd 'split term://R'
       end,
-      'new R terminal',
+      'new [r] terminal',
     },
-    p = { ':vsplit term://python<cr>', 'new python terminal' },
-    i = { ':vsplit term://ipython<cr>', 'new ipython terminal' },
-    j = { ':vsplit term://julia<cr>', 'new julia terminal' },
-    ['oo'] = { 'o# %%<cr>', 'new code chunk below' },
-    ['Oo'] = { 'O# %%<cr>', 'new code chunk above' },
-    ['ob'] = { 'o```{bash}<cr>```<esc>O', 'bash code chunk' },
-    ['or'] = { 'o```{r}<cr>```<esc>O', 'r code chunk' },
-    ['op'] = { 'o```{python}<cr>```<esc>O', 'python code chunk' },
-    ['oj'] = { 'o```{julia}<cr>```<esc>O', 'julia code chunk' },
-    ['ol'] = { 'o```{julia}<cr>```<esc>O', 'julia code chunk' },
+    d = { ':split term://radian<cr>', 'new ra[d]ian terminal' },
+    p = { ':split term://python<cr>', 'new [p]ython terminal' },
+    i = { ':split term://ipython<cr>', 'new [i]python terminal' },
+    o = {
+      name = '[o]pen code chunk',
+      o = { 'o# %%<cr>', 'new code chunk below' },
+      p = { 'o```{python}<cr>```<esc>O', 'python code chunk' },
+      r = { 'o```{r}<cr>```<esc>O', 'r code chunk' },
+      b = { 'o```{bash}<cr>```<esc>O', 'bash code chunk' },
+    },
+    --j = { ':split term://julia<cr>', 'new julia terminal' },
+    --['oo'] = { 'o# %%<cr>', 'new code chunk below' },
+    --['Oo'] = { 'O# %%<cr>', 'new code chunk above' },
+    --['ob'] = { 'o```{bash}<cr>```<esc>O', 'bash code chunk' },
+    --['or'] = { 'o```{r}<cr>```<esc>O', 'r code chunk' },
+    --['op'] = { 'o```{python}<cr>```<esc>O', 'python code chunk' },
+    --['oj'] = { 'o```{julia}<cr>```<esc>O', 'julia code chunk' },
+    --['ol'] = { 'o```{julia}<cr>```<esc>O', 'julia code chunk' },
   },
   i = {
     name = 'insert',
@@ -330,7 +341,7 @@ local insert_py_chunk = function()
   insert_code_chunk 'python'
 end
 
--- normal mode
+-- NOTE: normal mode
 wk.register({
   ['<c-LeftMouse>'] = { '<cmd>lua vim.lsp.buf.definition()<CR>', 'go to definition' },
   ['<c-q>'] = { '<cmd>q<cr>', 'close buffer' },
@@ -344,9 +355,10 @@ wk.register({
   ['<m-I>'] = { insert_py_chunk, 'python code chunk' },
   [']q'] = { ':silent cnext<cr>', 'quickfix next' },
   ['[q'] = { ':silent cprev<cr>', 'quickfix prev' },
+  ['z?'] = { ':setlocal spell!<cr>', 'toggle spellcheck' },
 }, { mode = 'n', silent = true })
 
--- visual mode
+-- NOTE: visual mode
 wk.register({
   ['<cr>'] = { '<Plug>SlimeRegionSend', 'run code region' },
   ['<M-j>'] = { ":m'>+<cr>`<my`>mzgv`yo`z", 'move line down' },
@@ -355,12 +367,13 @@ wk.register({
   ['q'] = { ':norm @q<cr>', 'repat q macro' },
 }, { mode = 'v' })
 
+-- NOTE: visual mode with <leader>
 wk.register({
   ['<leader>'] = { '<Plug>SlimeRegionSend', 'run code region' },
   ['p'] = { '"_dP', 'replace without overwriting reg' },
 }, { mode = 'v', prefix = '<leader>' })
 
--- insert mode
+-- NOTE: mode
 wk.register({
   -- ['<c-e>'] = { "<esc>:FeMaco<cr>i", "edit code" },
 
