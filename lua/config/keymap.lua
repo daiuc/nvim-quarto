@@ -156,7 +156,9 @@ wk.register({
       end,
       'new [r] terminal',
     },
-    d = { ':split term://radian<cr>', 'new ra[d]ian terminal' },
+    --WARN: radian is problematic, because bracketed paste mode is not supported in slime
+    --So multipline brackets are not pasted correctly.
+    --d = { ':split term://radian<cr>', 'new ra[d]ian terminal' },
     p = { ':split term://python<cr>', 'new [p]ython terminal' },
     i = { ':split term://ipython<cr>', 'new [i]python terminal' },
     o = {
