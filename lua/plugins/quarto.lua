@@ -102,12 +102,6 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          -- note: Remember that lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself
-          -- many times.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
           local map = function(keys, func, desc)
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
@@ -127,7 +121,7 @@ return {
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          map('gD', require('telescope.builtin').lsp_type_definitions, '[G]oto type [D]efinition')
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
@@ -137,10 +131,6 @@ return {
           --  Similar to document symbols, except searches over your whole project.
           map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
-          -- Rename the variable under your cursor
-          --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
@@ -149,9 +139,10 @@ return {
           --  See `:help K` for why this keymap
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
 
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          -- bind gh to go to sigature help
+          -- This is useful when you're in the middle of typing a function call and you want to see
+          -- the signature of the function you're calling.
+          map('gh', vim.lsp.buf.signature_help, 'Signature [H]elp')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -191,6 +182,14 @@ return {
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+
+      local lsp_flags = {
+        allow_incremental_sync = true,
+        debounce_text_changes = 150,
+      }
+      vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = require('misc.style').border })
+      vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = require('misc.style').border })
+
       local servers = {
 
         lua_ls = {
@@ -220,9 +219,12 @@ return {
           },
         },
 
-        pyright = {},
+        pyright = {
+          flags = lsp_flags,
+        },
 
         r_language_server = {
+          flags = lsp_flags,
           settings = {
             r = {
               lsp = {
@@ -232,7 +234,20 @@ return {
           },
         },
 
-        bashls = {},
+        bashls = {
+          flags = lsp_flags,
+          filetypes = { 'sh', 'zsh', 'bash' },
+        },
+
+        --awk_ls = {},
+
+        html = {},
+
+        cssls = {},
+
+        ltex = {},
+
+        jsonls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -250,6 +265,8 @@ return {
         'stylua', -- Used to format lua code
         'black',
         'isort',
+        'prettier', -- Used to format javascript code
+        'shfmt', -- Used to format bash code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -270,15 +287,17 @@ return {
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    enabled = true,
     opts = {
       notify_on_error = false,
       format_on_save = {
-        timeout_ms = 500,
+        timeout_ms = 2000,
         lsp_fallback = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'isort', 'black' },
+        r = { 'styler' }, -- syler is slow, according to the author, so increased timeout
         -- Conform can also run multiple formatters sequentially
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -323,6 +342,8 @@ return {
       { 'ray-x/cmp-treesitter' },
       { 'jmbuhr/cmp-pandoc-references' },
       { 'kdheepak/cmp-latex-symbols' },
+      { 'rafamadriz/friendly-snippets' },
+      --{ 'onsails/lspkind-nvim' },
     },
     config = function()
       -- See `:help cmp`
@@ -393,22 +414,108 @@ return {
           { name = 'spell' },
         },
       }
+
+      -- friendly snippets
+      require('luasnip.loaders.from_vscode').lazy_load()
+      -- custom snippets
+      require('luasnip.loaders.from_vscode').lazy_load {
+        paths = {
+          vim.fn.stdpath 'config' .. '/snips',
+        },
+      }
+      -- link quarto and rmarkdown to markdown snippets
+      luasnip.filetype_extend('quarto', { 'markdown' })
+      luasnip.filetype_extend('rmarkdown', { 'markdown' })
     end,
   },
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
     build = ':TSUpdate',
     config = function()
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'markdown', 'vim', 'vimdoc', 'r', 'python', 'markdown_inline' },
+        ensure_installed = {
+          'r',
+          'python',
+          'markdown',
+          'markdown_inline',
+          'latex',
+          'bash',
+          'lua',
+          'html',
+          'css',
+          'dot',
+          'json',
+          'vim',
+          'vimdoc',
+          'yaml',
+          'mermaid',
+          'norg',
+          'javascript',
+          'typescript',
+        },
         -- Autoinstall languages that are not installed
         auto_install = true,
-        highlight = { enable = true },
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = false,
+        },
         indent = { enable = true },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = 'gnn',
+            node_incremental = 'grn',
+            scope_incremental = 'grc',
+            node_decremental = 'grm',
+          },
+        },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              -- You can use the capture groups defined in textobjects.scm
+              ['af'] = '@function.outer',
+              ['if'] = '@function.inner',
+              ['ac'] = '@class.outer',
+              ['ic'] = '@class.inner',
+              ['al'] = '@loop.outer',
+              ['il'] = '@loop.inner',
+              ['ab'] = '@block.outer',
+              ['ib'] = '@block.inner',
+              ['aa'] = '@parameter.outer',
+              ['ia'] = '@parameter.inner',
+            },
+          },
+          move = {
+            enable = true,
+            -- Whether to set jumps in the jumplist
+            set_jumps = true,
+            goto_next_start = {
+              [']m'] = '@function.outer',
+              [']]'] = '@class.inner',
+            },
+            goto_next_end = {
+              [']M'] = '@function.outer',
+              [']['] = '@class.outer',
+            },
+            goto_previous_start = {
+              ['[m'] = '@function.outer',
+              ['[['] = '@class.inner',
+            },
+            goto_previous_end = {
+              ['[M'] = '@function.outer',
+              ['[]'] = '@class.outer',
+            },
+          },
+        },
       }
 
       -- There are additional nvim-treesitter modules that you can use to interact
