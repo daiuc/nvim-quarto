@@ -1,5 +1,15 @@
+-- space as leader
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
+-- Set to true if you have nerd fonts installed
+vim.g.have_nerd_fonts = true
+
 -- proper colors
 vim.opt.termguicolors = true
+
+-- show which line your cusor is on
+vim.opt.cursorline = true
 
 -- more opinionated
 vim.opt.number = true -- show linenumbers
@@ -18,10 +28,6 @@ local tabsize = 2
 vim.opt.expandtab = true
 vim.opt.shiftwidth = tabsize
 vim.opt.tabstop = tabsize
-
--- space as leader
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
 
 -- smarter search
 vim.opt.ignorecase = true
