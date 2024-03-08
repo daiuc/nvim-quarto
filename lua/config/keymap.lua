@@ -143,6 +143,7 @@ end
 
 -- NOTE: normal mode with <leader>
 wk.register({
+  n = { ':ASToggle<cr>', 'toggle autosave' },
   r = { name = 'R' },
   c = {
     name = '[c]ode / [c]ell / [c]hunk',
