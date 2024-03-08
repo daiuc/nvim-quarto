@@ -16,3 +16,13 @@ require 'config.lazy'
 require 'config.autocommands'
 require 'config.keymap'
 require 'config.colors'
+
+-- Use vim-plug to install vim plugins
+--local vim = vim
+local Plug = vim.fn['plug#']
+
+vim.call 'plug#begin'
+
+Plug 'raivivek/vim-snakemake'
+
+vim.call 'plug#end'

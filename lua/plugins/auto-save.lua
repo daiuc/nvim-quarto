@@ -4,7 +4,7 @@ return {
     enabled = true,
     opt = {
       auto_save = true,
-      debounce_delay = 2000, -- autosave at most every x milliseconds
+      debounce_delay = 30000, -- autosave at most every x milliseconds
     },
   },
 }
