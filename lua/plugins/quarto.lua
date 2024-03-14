@@ -8,7 +8,16 @@ return {
     opts = {},
     dependencies = {
       'jmbuhr/otter.nvim',
-      opts = {},
+      opts = {
+        lspFeatures = {
+          languages = { 'r', 'python', 'bash' },
+          codeRunner = {
+            enabled = true,
+            default_method = 'slime',
+          },
+        },
+      },
+      l,
     },
   },
 
@@ -248,6 +257,11 @@ return {
         ltex = {},
 
         jsonls = {},
+
+        marksman = {
+          filetypes = { 'markdown', 'quarto' },
+          -- root_dir = util.root_pattern('.git', '.marksman.toml', '_quarto.yml'),
+        },
       }
 
       -- Ensure the servers and tools above are installed
