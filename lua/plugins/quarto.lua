@@ -5,20 +5,39 @@ return {
   -- quarto
   {
     'quarto-dev/quarto-nvim',
-    opts = {},
+    opts = {
+      ft = { 'quarto' },
+      lspFeatures = {
+        languages = { 'r', 'python', 'bash' },
+        codeRunner = {
+          enabled = true,
+          default_method = 'slime',
+        },
+      },
+    },
     dependencies = {
-      'jmbuhr/otter.nvim',
-      opts = {
-        lspFeatures = {
-          languages = { 'r', 'python', 'bash' },
-          codeRunner = {
-            enabled = true,
-            default_method = 'slime',
+      {
+        'jmbuhr/otter.nvim',
+        opts = {
+          lspFeatures = {
+            hover = {
+              border = require('misc.style').border,
+            },
+            languages = { 'r', 'python', 'bash' },
+            buffers = {
+              set_filetype = false,
+              write_to_disk = true,
+            },
+            handle_leading_whitespace = true,
+            codeRunner = {
+              enabled = true,
+              default_method = 'slime',
+            },
           },
         },
       },
-      l,
     },
+    config = function() end,
   },
 
   -- send code from python/r/qmd documets to a terminal or REPL
@@ -79,6 +98,7 @@ return {
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
+      local util = require 'lspconfig.util'
       -- Brief Aside: **What is LSP?**
       --
       -- LSP is an acronym you've probably heard, but might not understand what it is.
@@ -260,7 +280,7 @@ return {
 
         marksman = {
           filetypes = { 'markdown', 'quarto' },
-          -- root_dir = util.root_pattern('.git', '.marksman.toml', '_quarto.yml'),
+          root_dir = util.root_pattern('.git', '.marksman.toml', '_quarto.yml'),
         },
       }
 
@@ -308,6 +328,13 @@ return {
         timeout_ms = 2000,
         lsp_fallback = true,
       },
+      lang_to_ext = {
+        bash = 'sh',
+        r = 'r',
+        python = 'py',
+        markdown = 'md',
+        latex = 'tex',
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'isort', 'black' },
@@ -337,13 +364,14 @@ return {
           return 'make install_jsregexp'
         end)(),
       },
-      'saadparwaiz1/cmp_luasnip',
+      { 'saadparwaiz1/cmp_luasnip' },
 
       -- Adds other completion capabilities.
       --  nvim-cmp does not ship with all sources by default. They are split
       --  into multiple repos for maintenance purposes.
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-path',
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/cmp-nvim-lsp-signature-help' },
+      { 'hrsh7th/cmp-path' },
       -- If you want to add a bunch of pre-configured snippets,
       --    you can use this plugin to help you. It even has snippets
       --    for various frameworks/libraries/etc. but you will have to
@@ -357,12 +385,20 @@ return {
       { 'jmbuhr/cmp-pandoc-references' },
       { 'kdheepak/cmp-latex-symbols' },
       { 'rafamadriz/friendly-snippets' },
-      --{ 'onsails/lspkind-nvim' },
+      { 'L3MON4D3/LuaSnip' },
+      { 'onsails/lspkind-nvim' },
     },
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
+      local lspkind = require 'lspkind'
+
+      local has_words_before = function()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
+      end
+
       luasnip.config.setup {}
 
       cmp.setup {
@@ -378,15 +414,37 @@ return {
         --
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
+          ['<C-f>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
+
           -- Select the [n]ext item
           ['<C-n>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
           ['<C-p>'] = cmp.mapping.select_prev_item(),
 
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
+          ['<C-e>'] = cmp.mapping.abort(),
           ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -412,6 +470,28 @@ return {
             end
           end, { 'i', 's' }),
         },
+
+        ---@diagnostic disable-next-line: missing-fields
+        formatting = {
+          format = lspkind.cmp_format {
+            mode = 'symbol',
+            menu = {
+              otter = '[🦦]',
+              nvim_lsp = '[LSP]',
+              luasnip = '[snip]',
+              buffer = '[buf]',
+              path = '[path]',
+              spell = '[spell]',
+              pandoc_references = '[ref]',
+              tags = '[tag]',
+              treesitter = '[TS]',
+              calc = '[calc]',
+              latex_symbols = '[tex]',
+              emoji = '[emoji]',
+            },
+          },
+        },
+
         sources = {
           { name = 'lua_ls' },
           { name = 'nvim_lsp' },
@@ -426,6 +506,15 @@ return {
           { name = 'emoji' },
           { name = 'pandoc_references' },
           { name = 'spell' },
+        },
+
+        view = {
+          entries = 'native',
+        },
+        window = {
+          documentation = {
+            border = require('misc.style').border,
+          },
         },
       }
 
@@ -581,7 +670,60 @@ return {
     end,
   },
 
-  { --github copilot
-    'github/copilot.vim',
+  -- { --github copilot
+  --   'github/copilot.vim',
+  -- },
+  -- use this one instead
+  { -- gh copilot
+    'zbirenbaum/copilot.lua',
+    config = function()
+      require('copilot').setup {
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+          debounce = 75,
+          keymap = {
+            accept = '<c-a>',
+            accept_word = false,
+            accept_line = false,
+            next = '<M-]>',
+            prev = '<M-[>',
+            dismiss = '<C-]>',
+          },
+        },
+        panel = { enabled = false },
+      }
+    end,
+  },
+
+  -- paste an image from the clipboard or drag-and-drop
+  {
+    'HakonHarnes/img-clip.nvim',
+    event = 'BufEnter',
+    opts = {
+      filetypes = {
+        markdown = {
+          url_encode_path = true,
+          template = '![$CURSOR]($FILE_PATH)',
+          drag_and_drop = {
+            download_images = false,
+          },
+        },
+        quarto = {
+          url_encode_path = true,
+          template = '![$CURSOR]($FILE_PATH)',
+          drag_and_drop = {
+            download_images = false,
+          },
+        },
+      },
+    },
+  },
+  -- preview equations
+  {
+    'jbyuki/nabla.nvim',
+    keys = {
+      { '<leader>qm', ':lua require"nabla".toggle_virt()<cr>', desc = 'toggle [m]ath equations' },
+    },
   },
 }

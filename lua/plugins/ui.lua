@@ -42,7 +42,7 @@ return {
   -- markdown highlight
   {
     'lukas-reineke/headlines.nvim',
-    enabled = false,
+    enabled = true,
     dependencies = 'nvim-treesitter/nvim-treesitter',
     config = function()
       require('headlines').setup {

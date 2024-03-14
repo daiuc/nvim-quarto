@@ -47,7 +47,7 @@ return {
     opts = {
       handler_options = {
         -- you can select between google, bing, duckduckgo, and ecosia
-        search_engine = 'duckduckgo',
+        search_engine = 'google',
       },
     },
   },
