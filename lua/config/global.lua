@@ -1,3 +1,5 @@
+local animals = require('misc.style').animals
+
 -- space as leader
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -65,7 +67,10 @@ let g:currentmode={
        \ 't'  : '%#ModeMsg# TERM ',
        \}
 ]]
-vim.opt.statusline = '%{%g:currentmode[mode()]%} %* %t | %y | %* %= c:%c l:%l/%L %p%% 🦦 '
+
+math.randomseed(os.time())
+local i = math.random(#animals)
+vim.opt.statusline = '%{%g:currentmode[mode()]%} %{%reg_recording()%} %* %t | %y | %* %= c:%c l:%l/%L %p%% ' .. animals[i] .. ' %*'
 
 -- split right and below by default
 vim.opt.splitright = true
@@ -82,7 +87,7 @@ vim.opt.formatoptions:remove { 'c', 'r', 'o' }
 
 -- hide cmdline when not used
 -- WARN: this somehow disables q(macro)!
---vim.opt.cmdheight = 0
+vim.opt.cmdheight = 1
 
 -- scroll before end of window
 vim.opt.scrolloff = 5
@@ -90,9 +95,20 @@ vim.opt.scrolloff = 5
 -- (don't == 0) replace certain elements with prettier ones
 vim.opt.conceallevel = 0
 
+-- diagnostics
+vim.diagnostic.config {
+  virtual_text = true,
+  underline = true,
+  signs = true,
+}
+
 -- add new filetypes
 vim.filetype.add {
   extension = {
     ojs = 'javascript',
   },
 }
+
+-- additional builtin vim packages
+-- filter quickfix list with Cfilter
+vim.cmd.packadd 'cfilter'
