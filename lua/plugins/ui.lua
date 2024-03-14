@@ -56,6 +56,15 @@ return {
           codeblock_highlight = 'CodeBlock',
           treesitter_language = 'markdown',
         },
+        markdown = {
+          query = vim.treesitter.query.parse(
+            'markdown',
+            [[
+                (fenced_code_block) @codeblock
+                ]]
+          ),
+          codeblock_highlight = 'CodeBlock',
+        },
       }
     end,
   },
@@ -63,5 +72,19 @@ return {
   {
     'RRethy/vim-illuminate',
     enabled = false,
+  },
+  { -- nicer-looking tabs with close icons
+    'nanozuki/tabby.nvim',
+    enabled = false,
+    config = function()
+      require('tabby.tabline').use_preset 'tab_only'
+    end,
+  },
+  { -- scrollbar
+    'dstein64/nvim-scrollview',
+    enabled = true,
+    opts = {
+      current_only = true,
+    },
   },
 }
