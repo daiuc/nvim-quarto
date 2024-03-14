@@ -269,6 +269,7 @@ return {
         },
 
         --awk_ls = {},
+        snakefmt = {},
 
         html = {},
 
@@ -488,6 +489,7 @@ return {
               calc = '[calc]',
               latex_symbols = '[tex]',
               emoji = '[emoji]',
+              snakefmt = '[snake]',
             },
           },
         },
@@ -506,6 +508,7 @@ return {
           { name = 'emoji' },
           { name = 'pandoc_references' },
           { name = 'spell' },
+          { name = 'snakefmt' },
         },
 
         view = {
