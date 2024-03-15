@@ -8,7 +8,7 @@ return {
     opts = {
       ft = { 'quarto' },
       lspFeatures = {
-        languages = { 'r', 'python', 'bash' },
+        languages = { 'r', 'pyright', 'bash', 'python' },
         codeRunner = {
           enabled = true,
           default_method = 'slime',
@@ -23,7 +23,7 @@ return {
             hover = {
               border = require('misc.style').border,
             },
-            languages = { 'r', 'python', 'bash' },
+            languages = { 'r', 'pyright', 'bash', 'python' },
             buffers = {
               set_filetype = false,
               write_to_disk = true,
@@ -75,8 +75,14 @@ return {
         vim.b.slime_config = { jobid = vim.g.slime_last_channel }
       end
 
-      vim.g.slime_target = 'neovim'
-      vim.g.slime_python_ipython = 1
+      --slime, send code to neovim terminal
+      -- vim.g.slime_target = 'neovim'
+      -- vim.g.slime_python_ipython = 1
+
+      --slime, send code to tmux
+      vim.g.slime_target = 'tmux'
+      vim.g.slime_bracketed_paste = 1
+      vim.g.slime_default_config = { socket_name = 'default', target_pane = '.2' }
 
       require('which-key').register {
         ['<leader>cm'] = { mark_terminal, 'mark terminal' },
