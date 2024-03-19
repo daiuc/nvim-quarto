@@ -1,6 +1,7 @@
 return {
   {
     'jackMort/ChatGPT.nvim',
+    enabled = true,
     event = 'VeryLazy',
     opts = {},
     dependencies = {

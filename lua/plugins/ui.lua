@@ -1,13 +1,12 @@
 return {
   {
     'nvim-lualine/lualine.nvim',
-    config = function()
-      require('lualine').setup {
-        options = {
-          theme = 'dracula',
-        },
-      }
-    end,
+    opts = {
+      options = {
+        theme = 'dracula',
+        icons_enabled = true,
+      },
+    },
   },
   {
     'folke/which-key.nvim',
