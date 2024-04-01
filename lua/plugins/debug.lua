@@ -25,6 +25,7 @@ return {
     dependencies = {
       {
         'rcarriga/nvim-dap-ui',
+        dependencies = { 'nvim-neotest/nvim-nio' },
         config = function()
           vim.fn.sign_define('DapBreakpoint', { text = '🦦', texthl = '', linehl = '', numhl = '' })
           require('dapui').setup()
