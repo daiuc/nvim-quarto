@@ -44,6 +44,7 @@ return {
   -- like ipython, R, bash
   {
     'jpalardy/vim-slime',
+    enabled = true,
     init = function()
       vim.b['quarto_is_python_chunk'] = false
       Quarto_is_in_python_chunk = function()
@@ -66,6 +67,12 @@ return {
       endfunction
       ]]
 
+      --slime, send code to neovim terminal
+      --NOTE: for some reason using neovim doesn't work!
+      -- vim.g.slime_target = 'neovim'
+      -- vim.g.slime_python_ipython = 1
+      -- vim.g.slime_bracketed_paste = 1
+
       local function mark_terminal()
         vim.g.slime_last_channel = vim.b.terminal_job_id
         vim.print(vim.g.slime_last_channel)
@@ -75,20 +82,15 @@ return {
         vim.b.slime_config = { jobid = vim.g.slime_last_channel }
       end
 
-      --slime, send code to neovim terminal
-      vim.g.slime_target = 'neovim'
-      vim.g.slime_bracketed_paste = 1
-      vim.g.slime_python_ipython = 1
+      -- require('which-key').register {
+      --   ['<leader>cm'] = { mark_terminal, 'mark terminal' },
+      --   ['<leader>cs'] = { set_terminal, 'set terminal' },
+      -- }
 
       --slime, send code to tmux
-      --vim.g.slime_target = 'tmux'
-      --vim.g.slime_bracketed_paste = 1
-      --vim.g.slime_default_config = { socket_name = 'default', target_pane = '.2' }
-
-      require('which-key').register {
-        ['<leader>cm'] = { mark_terminal, 'mark terminal' },
-        ['<leader>cs'] = { set_terminal, 'set terminal' },
-      }
+      vim.g.slime_target = 'tmux'
+      vim.g.slime_bracketed_paste = 1
+      vim.g.slime_default_config = { socket_name = 'default', target_pane = '.2' }
     end,
   },
 

@@ -70,7 +70,7 @@ return {
   -- highlight current word
   {
     'RRethy/vim-illuminate',
-    enabled = false,
+    enabled = true,
   },
   { -- nicer-looking tabs with close icons
     'nanozuki/tabby.nvim',
