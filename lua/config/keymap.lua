@@ -282,6 +282,7 @@ wk.register({
     w = { 'zw', 'wrong' },
     b = { 'zw', 'bad' },
     l = { 'list session' },
+    d = { ':Autosession delete<cr>', 'delete session' },
     ['?'] = { '<cmd>Telescope spell_suggest<cr>', 'suggest' },
   },
   g = {
