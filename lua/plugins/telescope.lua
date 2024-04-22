@@ -14,6 +14,7 @@ return {
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_fonts },
       { -- If encountering errors, see telescope-fzf-native README for install instructions
         'nvim-telescope/telescope-fzf-native.nvim',
+        'jonarrien/telescope-cmdline.nvim',
 
         -- `build` is used to run some command when the plugin is installed/updated.
         -- This is only run then, not every time Neovim starts up.
@@ -67,6 +68,7 @@ return {
       require('telescope').load_extension 'ui-select'
       require('telescope').load_extension 'dap'
       require('telescope').load_extension 'fzf'
+      require('telescope').load_extension 'cmdline'
     end,
   },
 }

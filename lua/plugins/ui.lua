@@ -6,6 +6,9 @@ return {
         theme = 'dracula',
         icons_enabled = true,
       },
+      sections = {
+        lualine_a = { 'buffers' },
+      },
     },
   },
   {

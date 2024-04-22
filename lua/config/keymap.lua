@@ -45,6 +45,9 @@ nmap('<S-Down>', '<cmd>resize -2<CR>')
 nmap('<S-Left>', '<cmd>vertical resize -2<CR>')
 nmap('<S-Right>', '<cmd>vertical resize +2<CR>')
 
+-- Telescope cmdline
+nmap('<leader><leader>', '<cmd>Telescope cmdline<cr>')
+
 -- Add undo break-points
 imap(',', ',<c-g>u')
 imap('.', '.<c-g>u')
