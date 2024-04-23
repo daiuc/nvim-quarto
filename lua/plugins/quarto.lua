@@ -8,7 +8,7 @@ return {
     opts = {
       ft = { 'quarto' },
       lspFeatures = {
-        languages = { 'r', 'pyright', 'path', 'bash', 'python' },
+        languages = { 'r', 'pyright', 'path', 'bash', 'python', 'yaml-language-server', 'taplo' },
         codeRunner = {
           enabled = true,
           default_method = 'slime',
@@ -570,6 +570,7 @@ return {
           'vim',
           'vimdoc',
           'yaml',
+          'toml',
           'mermaid',
           'norg',
           'javascript',
